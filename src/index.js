@@ -3,6 +3,7 @@ dotenv.config();
 
 const express = require('express');
 const authApi = require('./routes/authApi');
+const homeApi = require('./routes/home')
 const database = require('./config/database');
 var bodyParser = require('body-parser')
 
@@ -17,6 +18,7 @@ app.use(bodyParser.json());
 // app.use(express.json());
 
 app.use('/api/users', authApi);
+app.use('/api/home', homeApi);
 
 mySqlDb.connect((error) => {
   if (error) console.log(error)
