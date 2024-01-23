@@ -102,4 +102,46 @@ api.get('/login', (req, res) => {
   }
 });
 
+api.delete('/delete',(req,res)=>{
+  const {password,id}=req.body
+  if(!id){
+    res.status(500).send({error:"id is required"})
+    return
+  }
+  if(!password){
+    res.status(500).send({error:"password is required"})
+    return
+  }
+  try{
+    mySqlDb.query('SELECT * from users WHERE id = ?', [id], async (error, results) => {
+      if (error) {
+        res.status(500).json({ error: 'Unable to get user', message: error.message });
+        return
+      }
+      const user = results?.[0]
+      if (!user) {
+        res.status(404).json({ error: 'User not found' });
+        return
+      }
+      const isEqual = await bcrypt.compare(password,user?.password)
+      if (!isEqual) {
+        res.status(400).json({ error: 'Password is incorrect' });
+        return
+      }
+      mySqlDb.query('DELETE FROM users WHERE id= ?',[id],(error,result)=>{
+        if (error) {
+          res.status(500).json({ error: 'Unable to delete user', message: error.message });
+          return
+        }
+        if(result?.affectedRows>0){
+          res.status(200).json({message:"User deleted successfully"})
+          return
+        }
+      })
+    })
+  }catch(error){
+    res.status(500).json({ error: 'Unable to delete user', message: error.message });
+  }
+})
+
 module.exports = api;
