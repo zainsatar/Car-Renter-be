@@ -58,7 +58,7 @@ api.post('/',upload.any(),(req,res)=>{
         const Image3 = files.find(file => file.fieldname === 'Image3')?.buffer
         const Image4 = files.find(file => file.fieldname === 'Image4')?.buffer
 
-        const car={...req.body,Image1,Image2,Image3,Image4}
+        const car={...req.body,Image1,Image2,Image3,Image4,ratings:-1}
         mySqlDb.query('INSERT INTO cars SET ?', car, (error, result) => {
             if (error) {
                 res.status(500).json({ error: 'Car is not added.', message: error.message });
