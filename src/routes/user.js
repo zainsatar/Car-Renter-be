@@ -27,7 +27,7 @@ api.post('/register', upload.any(), (req, res) => {
     res.status(404).json({ error: 'password should not be empty' });
   }
   const profileImage = files.find(file => file.fieldname === 'profileImage')?.buffer
-  const idbackImage = files.find(file => file.fieldname === 'idbackImage')?.buffer
+  const idBackImage = files.find(file => file.fieldname === 'idBackImage')?.buffer
   const idFrontImage = files.find(file => file.fieldname === 'idFrontImage')?.buffer
 
   try {
@@ -49,7 +49,7 @@ api.post('/register', upload.any(), (req, res) => {
           email,
           profileImage,
           idFrontImage,
-          idbackImage,
+          idBackImage,
           subscriptionPlan,
           role,
           password: hashedPassword,
@@ -93,7 +93,6 @@ api.get('/login', (req, res) => {
         return
       } else {
         const accessToken = jwt.sign(user.email, JWT_SECRET_KEY);
-        console.log(accessToken);
         res.status(200).json({ jwt: accessToken, user });
         return
       }

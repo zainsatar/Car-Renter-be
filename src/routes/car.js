@@ -3,7 +3,7 @@ const auth=require("../middleware/auth")
 const database = require('../config/database')
 const { mySqlDb } = database
 
-api.get('/models', (req, res) => {
+api.get('/models',auth, (req, res) => {
     try{
         mySqlDb.query('SELECT * from car_models',async (error, carModels) => {
             if (error) {
