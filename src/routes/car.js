@@ -1,13 +1,13 @@
-const api = require('express').Router();
 const multer = require('multer')
 const upload = multer()
+const express=require("express")
+const router=new express.Router()
 const auth=require("../middleware/auth")
-const database = require('../config/database')
-const { mySqlDb } = database
+const pool = require('../config/database')
 
-api.get('/models',auth, (req, res) => {
+router.get('/models',auth, (req, res) => {
     try{
-        mySqlDb.query('SELECT * from car_models',async (error, carModels) => {
+        pool.query('SELECT * from car_models',async (error, carModels) => {
             if (error) {
                 res.status(500).json({  error: 'Unable to Find Car Model', message: error.message });
                 return;
@@ -24,7 +24,7 @@ api.get('/models',auth, (req, res) => {
     }
 });
 
-api.post('/add',upload.any(),(req,res)=>{
+router.post('/add',upload.any(),auth,(req,res)=>{
     try{
         // const { renter_id, company_id, car_name, color, fuel_type, mileage, engine, kms_driven, address, longitude, latitude, province, city, famous_place_nearby} = req.body
         const {renter_id,company_id,car_name,province,city,address}=req.body
@@ -53,29 +53,29 @@ api.post('/add',upload.any(),(req,res)=>{
             return
         }
         const files = req.files
-        const Image1 = files.find(file => file.fieldname === 'Image1')?.buffer
-        const Image2 = files.find(file => file.fieldname === 'Image2')?.buffer
-        const Image3 = files.find(file => file.fieldname === 'Image3')?.buffer
-        const Image4 = files.find(file => file.fieldname === 'Image4')?.buffer
+        const Image1 = files?.find(file => file.fieldname === 'Image1')?.buffer
+        const Image2 = files?.find(file => file.fieldname === 'Image2')?.buffer
+        const Image3 = files?.find(file => file.fieldname === 'Image3')?.buffer
+        const Image4 = files?.find(file => file.fieldname === 'Image4')?.buffer
 
         const car={...req.body,Image1,Image2,Image3,Image4,ratings:-1}
-        mySqlDb.query('INSERT INTO cars SET ?', car, (error, result) => {
+        pool.query('INSERT INTO cars SET ?', car, (error, result) => {
             if (error) {
                 res.status(500).json({ error: 'Car is not added.', message: error.message });
             } else {
               res.status(200).json({ message: "Car added successfully." });
             }
-          })
+        })
 
     }catch(error){
         res.status(500).json({ error: 'Car is not added...', message: error.message });
     }
 })
 
-api.get('/getCarsByRenter',(req,res)=>{
+router.get('/getCarsByRenter',auth,(req,res)=>{
     try{
-        const {renter_id}=req.body
-        mySqlDb.query('SELECT * from cars WHERE renter_id = ?', [renter_id], async (error, cars) => {
+        const {renter_id}=req.query
+        pool.query('SELECT * from cars WHERE renter_id = ?', [renter_id], async (error, cars) => {
             if (error) {
                 res.status(500).json({ error: "Unable to find cars", message: error.message });
                 return
@@ -91,10 +91,10 @@ api.get('/getCarsByRenter',(req,res)=>{
     }
 })
 
-api.get('/getCarsByRenterAndModel',(req,res)=>{
+router.get('/getCarsByRenterAndModel',auth,(req,res)=>{
     try{
-        const {renter_id,model_id}=req.body
-        mySqlDb.query('SELECT * from cars WHERE renter_id = ? AND company_id = ?', [renter_id,model_id], async (error, cars) => {
+        const {renter_id,model_id}=req.query
+        pool.query('SELECT * from cars WHERE renter_id = ? AND company_id = ?', [renter_id,model_id], async (error, cars) => {
             if (error) {
                 res.status(500).json({ error: "Unable to find cars", message: error.message });
                 return
@@ -110,10 +110,10 @@ api.get('/getCarsByRenterAndModel',(req,res)=>{
     }
 })
 
-api.get('/getCarById',(req,res)=>{
+router.get('/getCarById',auth,(req,res)=>{
     try{
-        const {car_id}=req.body
-        mySqlDb.query('SELECT * from cars WHERE car_id = ? ', [car_id], async (error, cars) => {
+        const {car_id}=req.query
+        pool.query('SELECT * from cars WHERE car_id = ? ', [car_id], async (error, cars) => {
             if (error) {
                 res.status(500).json({ error: "Unable to find car", message: error.message });
                 return
@@ -129,4 +129,4 @@ api.get('/getCarById',(req,res)=>{
     }
 })
 
-module.exports = api;
+module.exports = router;

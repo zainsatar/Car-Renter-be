@@ -3,11 +3,11 @@ const express=require("express")
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs')
 const router=new express.Router()
-const database = require('../config/database')
 const upload = multer()
+const auth=require("../middleware/auth")
+const pool=require("../config/database")
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
-const { mySqlDb } = database
 const Role = {
   Customer: 'Customer',
   Renter: 'Renter'
@@ -32,7 +32,7 @@ router.post('/register', upload.any(), (req, res) => {
   const idFrontImage = files.find(file => file.fieldname === 'idFrontImage')?.buffer
 
   try {
-    mySqlDb.query('SELECT email from users WHERE email = ?', [email], async (error, results) => {
+    pool.query('SELECT email from users WHERE email = ?', [email], async (error, results) => {
 
       if (error) {
         res.status(500).json({ error: "Unable to register", message: error.message });
@@ -56,7 +56,7 @@ router.post('/register', upload.any(), (req, res) => {
           password: hashedPassword,
         }
 
-        mySqlDb.query('INSERT INTO users SET ?', user, (error, result) => {
+        pool.query('INSERT INTO users SET ?', user, (error, result) => {
           if (error) {
             res.status(500).json({ error: "Unable to register", message: error.message });
           } else {
@@ -81,7 +81,7 @@ router.post('/login',(req, res) => {
     res.status(404).json({ error: 'password should not be empty' });
   }
   try {
-    mySqlDb.query('SELECT * from users WHERE email = ?', [email], async (error, results) => {
+    pool.query('SELECT * from users WHERE email = ?', [email], async (error, results) => {
       if (error) {
         res.status(500).json({ error: 'Unable to login', message: error.message });
         return
@@ -108,7 +108,7 @@ router.post('/login',(req, res) => {
   }
 });
 
-router.delete('/delete',async(req,res)=>{
+router.delete('/delete',auth,async(req,res)=>{
   const {password,id}=req.body
   if(!id){
     res.status(500).send({error:"id is required"})
@@ -119,7 +119,7 @@ router.delete('/delete',async(req,res)=>{
     return
   }
   try{
-    mySqlDb.query('SELECT * from users WHERE id = ?', [id], async (error, results) => {
+    pool.query('SELECT * from users WHERE id = ?', [id], async (error, results) => {
       if (error) {
         res.status(500).json({ error: 'Unable to get user', message: error.message });
         return
@@ -134,7 +134,7 @@ router.delete('/delete',async(req,res)=>{
         res.status(400).json({ error: 'Password is incorrect' });
         return
       }
-      mySqlDb.query('DELETE FROM users WHERE id= ?',[id],(error,result)=>{
+      pool.query('DELETE FROM users WHERE id= ?',[id],(error,result)=>{
         if (error) {
           res.status(500).json({ error: 'Unable to delete user', message: error.message });
           return
