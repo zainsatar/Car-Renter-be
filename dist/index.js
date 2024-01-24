@@ -5,18 +5,18 @@ const userApi = require('./routes/user');
 const homeApi = require('./routes/home');
 const carApi = require('./routes/car');
 const database = require('./config/database');
-var bodyParser = require('body-parser');
 const app = express();
 const port = 3300;
 const {
   mySqlDb
 } = database;
-app.use(bodyParser.urlencoded({
+app.use(express.urlencoded({
+  extended: false
+}));
+app.use(express.urlencoded({
   extended: true
 }));
-app.use(bodyParser.json());
-// app.use(express.json());
-
+app.use(express.json());
 app.use('/api/users', userApi);
 app.use('/api/home', homeApi);
 app.use("/api/car", carApi);

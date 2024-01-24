@@ -1,7 +1,8 @@
 const multer = require('multer')
+const express=require("express")
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs')
-const api = require('express').Router();
+const router=new express.Router()
 const database = require('../config/database')
 const upload = multer()
 
@@ -12,7 +13,7 @@ const Role = {
   Renter: 'Renter'
 }
 
-api.post('/register', upload.any(), (req, res) => {
+router.post('/register', upload.any(), (req, res) => {
   const files = req.files
   const { email, name, password } = req.body
   const subscriptionPlan = req.body?.subscriptionPlan
@@ -71,9 +72,14 @@ api.post('/register', upload.any(), (req, res) => {
 });
 
 
-api.get('/login', (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+router.post('/login',(req, res) => {
+  const {email,password}=req.body
+  if (!email) {
+    res.status(404).json({ error: 'email should not be empty' });
+  }
+  if (!password) {
+    res.status(404).json({ error: 'password should not be empty' });
+  }
   try {
     mySqlDb.query('SELECT * from users WHERE email = ?', [email], async (error, results) => {
       if (error) {
@@ -102,7 +108,7 @@ api.get('/login', (req, res) => {
   }
 });
 
-api.delete('/delete',(req,res)=>{
+router.delete('/delete',async(req,res)=>{
   const {password,id}=req.body
   if(!id){
     res.status(500).send({error:"id is required"})
@@ -144,4 +150,4 @@ api.delete('/delete',(req,res)=>{
   }
 })
 
-module.exports = api;
+module.exports = router;
