@@ -26,9 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         );
     endif;
 
-    if ($_POST['role'] != 'renter'):
-        $_POST['subscriptionPlan'] = '';
-    endif;
+    if (isset($_POST['subscriptionPlan'])) {
+        $_POST['role'] = 'renter';
+    } else {
+        $_POST['role'] = 'customer';
+    }
 
     if (
         isset($_FILES['profileImage']) &&
@@ -41,18 +43,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
 
         // You can customize the file handling logic as per your requirements
         $uploadDir = __DIR__ . '/uploads/';
-        $uploadprofileImage = $uploadDir . basename($_POST['email'].$profileImage['name']);
-        $uploadidBackImage = $uploadDir . basename($_POST['email'].$idBackImage['name'] );
-        $uploadidFrontImage = $uploadDir . basename($_POST['email'].$idFrontImage['name'] );
+        $uploadprofileImage = $uploadDir . basename($_POST['email'] . $profileImage['name']);
+        $uploadidBackImage = $uploadDir . basename($_POST['email'] . $idBackImage['name']);
+        $uploadidFrontImage = $uploadDir . basename($_POST['email'] . $idFrontImage['name']);
 
         if (
             move_uploaded_file($profileImage['tmp_name'], $uploadprofileImage) &&
             move_uploaded_file($idBackImage['tmp_name'], $uploadidBackImage) &&
             move_uploaded_file($idFrontImage['tmp_name'], $uploadidFrontImage)
         ) {
-            $_POST['profileImage'] = $_POST['email'].$profileImage['name'] ;
-            $_POST['idBackImage'] = $_POST['email'].$idBackImage['name'] ;
-            $_POST['idFrontImage'] = $_POST['email'].$idFrontImage['name'] ;
+            $_POST['profileImage'] = $_POST['email'] . $profileImage['name'];
+            $_POST['idBackImage'] = $_POST['email'] . $idBackImage['name'];
+            $_POST['idFrontImage'] = $_POST['email'] . $idFrontImage['name'];
         } else {
             sendJson(500, 'Failed to upload file.');
         }
