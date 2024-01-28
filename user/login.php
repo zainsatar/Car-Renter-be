@@ -4,9 +4,9 @@ header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Methods: POST');
 header('Content-Type: application/json; charset=UTF-8');
 
-require_once __DIR__ . '/database.php';
-require_once __DIR__ . '/sendJson.php';
-require_once __DIR__ . '/vendor/autoload.php'; // Include JWT library
+require_once __DIR__ . '/../database/database.php';
+require_once __DIR__ . '/../helper/sendJson.php';
+require_once __DIR__ . '/../vendor/autoload.php'; // Include JWT library
 
 use Firebase\JWT\JWT;
 
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // User authenticated successfully, generate JWT
-    $secretKey = 'MY_JWT'; 
+    $secretKey = 'MY_JWT';
     $issuedAt = time();
     $expirationTime = $issuedAt + 60 * 60; // JWT token valid for 1 hour
 
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $token = JWT::encode($payload, $secretKey, 'HS256');
 
-    sendJson(200, 'Login successful.', ['token' => $token]);
+    sendJson(200, 'Login successful.', ['token' => $token, 'data' => $user]);
 
 } else {
     sendJson(405, 'Invalid Request Method. HTTP method should be POST');

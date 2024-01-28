@@ -5,8 +5,8 @@ header('Access-Control-Allow-Methods: POST');
 header('Content-Type: application/json; charset=UTF-8');
 header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
 
-require_once __DIR__ . '/database.php';
-require_once __DIR__ . '/sendJson.php';
+require_once __DIR__ . '/../database/database.php';
+require_once __DIR__ . '/../helper/sendJson.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     $data = json_decode(file_get_contents('php://input'));
@@ -41,20 +41,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         $idBackImage = $_FILES['idBackImage'];
         $idFrontImage = $_FILES['idFrontImage'];
 
+        $profileImageBasePath = $_POST['email'] . time() . $profileImage['name'];
+        $idBackImageBasePath = $_POST['email'] . time() . $idBackImage['name'];
+        $idFrontImageBasePath = $_POST['email'] . time() . $idFrontImage['name'];
+
         // You can customize the file handling logic as per your requirements
-        $uploadDir = __DIR__ . '/uploads/';
-        $uploadprofileImage = $uploadDir . basename($_POST['email'] . $profileImage['name']);
-        $uploadidBackImage = $uploadDir . basename($_POST['email'] . $idBackImage['name']);
-        $uploadidFrontImage = $uploadDir . basename($_POST['email'] . $idFrontImage['name']);
+        $uploadDir = __DIR__ . '/../uploads/';
+        $uploadprofileImage = $uploadDir . basename($profileImageBasePath);
+        $uploadidBackImage = $uploadDir . basename($idBackImageBasePath);
+        $uploadidFrontImage = $uploadDir . basename($idFrontImageBasePath);
 
         if (
             move_uploaded_file($profileImage['tmp_name'], $uploadprofileImage) &&
             move_uploaded_file($idBackImage['tmp_name'], $uploadidBackImage) &&
             move_uploaded_file($idFrontImage['tmp_name'], $uploadidFrontImage)
         ) {
-            $_POST['profileImage'] = $_POST['email'] . $profileImage['name'];
-            $_POST['idBackImage'] = $_POST['email'] . $idBackImage['name'];
-            $_POST['idFrontImage'] = $_POST['email'] . $idFrontImage['name'];
+            $_POST['profileImage'] = $profileImageBasePath;
+            $_POST['idBackImage'] = $idBackImageBasePath;
+            $_POST['idFrontImage'] = $idFrontImageBasePath;
         } else {
             sendJson(500, 'Failed to upload file.');
         }
