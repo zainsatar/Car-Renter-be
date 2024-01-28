@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         if (
             move_uploaded_file($image1['tmp_name'], $uploadimage1) &&
             move_uploaded_file($image2['tmp_name'], $uploadimage2) &&
-            move_uploaded_file($image2['tmp_name'], $uploadimage4) &&
+            move_uploaded_file($image4['tmp_name'], $uploadimage4) &&
             move_uploaded_file($image3['tmp_name'], $uploadimage3)
         ) {
             $_POST['image1'] = $image1BasePath;
