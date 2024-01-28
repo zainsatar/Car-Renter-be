@@ -32,6 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $carModels[] = $row;
     }
 
+    if (empty($carModels)) {
+        sendJson(401, 'No record found');
+    }
+
     sendJson(200, 'Car models retrieved successfully', ['carModels' => $carModels]);
 
 } else {

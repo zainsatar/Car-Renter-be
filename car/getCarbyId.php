@@ -25,36 +25,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET'):
 
 
     if (
-        !isset($data->renter_id) ||
-        !isset($data->model_id)
+        !isset($data->car_id)
     ):
         sendJson(
             422,
-            'renter id and model id is required'
+            'car id is required'
         );
     endif;
 
-    $renter_id = $data->renter_id;
-    $model_id = $data->model_id;
+    $car_id = $data->car_id;
 
-    $sql = "SELECT * FROM `cars` WHERE `renter_id`='$renter_id' AND `company_id`='$model_id'";
+    $sql = "SELECT * FROM `cars` WHERE `car_id`='$car_id'";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
         sendJson(500, 'Database query error.');
     }
 
-    $cars = array();
+    $car = mysqli_fetch_assoc($result);
 
-    while ($row = mysqli_fetch_assoc($result)) {
-        $cars[] = $row;
-    }
-
-    if (empty($cars)) {
+    if (!$car) {
         sendJson(401, 'No record found');
     }
 
-    sendJson(200, 'Cars retrieved successfully', ['cars' => $cars]);
+    sendJson(200, 'Car retrieved successfully', ['data' => $car]);
 endif;
 
 sendJson(405, 'Invalid Request Method. HTTP method should be GET');

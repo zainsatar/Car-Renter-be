@@ -1,17 +1,12 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Headers: access');
-header('Access-Control-Allow-Methods: POST');
 header('Content-Type: application/json; charset=UTF-8');
-header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
 
-require_once __DIR__ . '/../database/database.php';
+require_once __DIR__ . '/../database/database.php'; 
 require_once __DIR__ . '/../helper/sendJson.php';
 require_once __DIR__ . '/../helper/authHelper.php'; 
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET'):
-    $data = json_decode(file_get_contents('php://input'));
-
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     // Get the JWT token from the Authorization header
     $headers = apache_request_headers();
     $token = isset($headers['Authorization']) ? str_replace('Bearer ', '', $headers['Authorization']) : null;
@@ -23,19 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET'):
         sendJson(401, 'Unauthorized');
     }
 
-
-    if (
-        !isset($data->renter_id)
-    ):
-        sendJson(
-            422,
-            'renter id is required'
-        );
-    endif;
-
-    $renter_id = $data->renter_id;
-
-    $sql = "SELECT * FROM `cars` WHERE `renter_id`='$renter_id'";
+    // Assuming your car models table is named 'car_models'
+    $sql = "SELECT * FROM `cars`";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -52,7 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET'):
         sendJson(401, 'No record found');
     }
 
-    sendJson(200, 'Cars retrieved successfully', ['cars' => $cars]);
-endif;
+    sendJson(200, 'All Cars retrieved successfully', ['cars' => $cars]);
 
-sendJson(405, 'Invalid Request Method. HTTP method should be GET');
+} else {
+    sendJson(405, 'Invalid Request Method. HTTP method should be GET');
+}
+
