@@ -20,7 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
         sendJson(401, 'Unauthorized');
     }
 
-    // Assuming your users table has an 'id' column
     $email = $decodedToken->email;
 
     // Check if the user exists
