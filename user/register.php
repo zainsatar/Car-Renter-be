@@ -14,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         !isset($_POST['name']) ||
         !isset($_POST['email']) ||
         !isset($_POST['password']) ||
-        !isset($_POST['role']) ||
         empty(trim($_POST['name'])) ||
         empty(trim($_POST['email'])) ||
         empty(trim($_POST['password']))
@@ -22,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         sendJson(
             422,
             'Please fill all the required fields & None of the fields should be empty.',
-            ['required_fields' => ['name', 'email', 'password', 'role']]
+            ['required_fields' => ['name', 'email', 'password']]
         );
     endif;
 
