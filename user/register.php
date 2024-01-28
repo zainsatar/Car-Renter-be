@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         empty(trim($_POST['password']))
     ):
         sendJson(
-            404,
+            422,
             'Please fill all the required fields & None of the fields should be empty.',
             ['required_fields' => ['name', 'email', 'password', 'role']]
         );
