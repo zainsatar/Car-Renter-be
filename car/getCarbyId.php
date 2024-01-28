@@ -10,7 +10,6 @@ require_once __DIR__ . '/../helper/sendJson.php';
 require_once __DIR__ . '/../helper/authHelper.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET'):
-    $data = json_decode(file_get_contents('php://input'));
 
     // Get the JWT token from the Authorization header
     $headers = apache_request_headers();
@@ -25,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET'):
 
 
     if (
-        !isset($data->car_id)
+        !isset($_GET['car_id'])
     ):
         sendJson(
             422,
@@ -33,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET'):
         );
     endif;
 
-    $car_id = $data->car_id;
+    $car_id = $_GET['car_id'];
 
     $sql = "SELECT * FROM `cars` WHERE `car_id`='$car_id'";
     $result = mysqli_query($conn, $sql);
