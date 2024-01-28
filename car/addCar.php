@@ -58,7 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         $image3BasePath = $_POST['renter_id'] . time() . $image3['name'];
         $image4BasePath = $_POST['renter_id'] . time() . $image4['name'];
 
-        // You can customize the file handling logic as per your requirements
         $uploadDir = __DIR__ . '/../uploads/';
         $uploadimage1 = $uploadDir . basename($image1BasePath);
         $uploadimage2 = $uploadDir . basename($image2BasePath);
@@ -68,8 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         if (
             move_uploaded_file($image1['tmp_name'], $uploadimage1) &&
             move_uploaded_file($image2['tmp_name'], $uploadimage2) &&
-            move_uploaded_file($image4['tmp_name'], $uploadimage4) &&
-            move_uploaded_file($image3['tmp_name'], $uploadimage3)
+            move_uploaded_file($image3['tmp_name'], $uploadimage3) &&
+            move_uploaded_file($image4['tmp_name'], $uploadimage4)
         ) {
             $_POST['image1'] = $image1BasePath;
             $_POST['image2'] = $image2BasePath;
@@ -105,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
 
     $query = mysqli_query($conn, $sql);
     if ($query)
-        sendJson(200, 'Car added successfully.');
+        sendJson(200, 'Car added successfully.', ['data' => $_POST]);
     sendJson(500, 'Something going wrong.');
 endif;
 
