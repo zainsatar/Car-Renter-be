@@ -7,9 +7,12 @@ header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 require_once __DIR__ . '/../database/database.php';
 require_once __DIR__ . '/../helper/sendJson.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Firebase\JWT\JWT;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST'):
-    $data = json_decode(file_get_contents('php://input'));
+
     if (
         !isset($_POST['name']) ||
         !isset($_POST['email']) ||
@@ -30,6 +33,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     } else {
         $_POST['role'] = 'customer';
     }
+
+    $name = mysqli_real_escape_string($conn, htmlspecialchars(trim($_POST['name'])));
+    $email = mysqli_real_escape_string($conn, trim($_POST['email']));
+    $password = trim($_POST['password']);
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)):
+        sendJson(500, 'Invalid Email Address!');
+
+    elseif (strlen($password) < 8):
+        sendJson(500, 'Your password must be at least 8 characters long!');
+    endif;
+
+    $sql = "SELECT `email` FROM `users` WHERE `email`='$email'";
+    $query = mysqli_query($conn, $sql);
+    $row_num = mysqli_num_rows($query);
+
+    if ($row_num > 0)
+        sendJson(400, 'This E-mail already in use!');
 
     if (
         isset($_FILES['profileImage']) &&
@@ -63,35 +84,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         }
     }
 
-    $name = mysqli_real_escape_string($conn, htmlspecialchars(trim($_POST['name'])));
-    $email = mysqli_real_escape_string($conn, trim($_POST['email']));
-    $password = trim($_POST['password']);
     $role = $_POST['role'];
     $subscriptionPlan = $_POST['subscriptionPlan'];
     $profileImage = $_POST['profileImage'];
     $idBackImage = $_POST['idBackImage'];
     $idFrontImage = $_POST['idBackImage'];
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)):
-        sendJson(500, 'Invalid Email Address!');
-
-    elseif (strlen($password) < 8):
-        sendJson(500, 'Your password must be at least 8 characters long!');
-    endif;
-
     $hash_password = password_hash($password, PASSWORD_DEFAULT);
-    $sql = "SELECT `email` FROM `users` WHERE `email`='$email'";
-    $query = mysqli_query($conn, $sql);
-    $row_num = mysqli_num_rows($query);
 
-    if ($row_num > 0)
-        sendJson(400, 'This E-mail already in use!');
 
     $sql = "INSERT INTO `users`(`name`,`email`,`password`,`profileImage`,`idFrontImage`,`idBackImage`,`subscriptionPlan`,`role`) VALUES('$name','$email','$hash_password','$profileImage','$idFrontImage','$idBackImage','$subscriptionPlan','$role')";
 
     $query = mysqli_query($conn, $sql);
-    if ($query)
-        sendJson(200, 'You have successfully registered.');
+    if ($query):
+        $secretKey = 'MY_JWT';
+        $issuedAt = time();
+        $expirationTime = $issuedAt + 60 * 60; // JWT token valid for 1 hour
+
+        $payload = array(
+            'email' => $email,
+            'iat' => $issuedAt,
+            'exp' => $expirationTime
+        );
+
+        $token = JWT::encode($payload, $secretKey, 'HS256');
+
+        sendJson(200, 'You have successfully registered.', ['token' => $token, 'data' => $_POST]);
+    endif;
     sendJson(500, 'Something going wrong.');
 endif;
 
