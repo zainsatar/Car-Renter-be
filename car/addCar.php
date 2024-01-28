@@ -83,9 +83,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     $renter_id = $_POST['renter_id'];
     $company_id = $_POST['company_id'];
     $car_name = $_POST['car_name'];
+    $color = $_POST['color'];
+    $fuel_type = $_POST['fuel_type'];
+    $kms_driven = $_POST['kms_driven'];
+    $mileage = $_POST['mileage'];
+    $engine = $_POST['engine'];
+    $latitude = $_POST['latitude'];
+    $longitude = $_POST['longitude'];
     $province = $_POST['province'];
     $city = $_POST['city'];
     $address = $_POST['address'];
+    $famous_place_nearby = $_POST['famous_place_nearby']; 
     $image1 = $_POST['image1'];
     $image2 = $_POST['image2'];
     $image3 = $_POST['image3'];
@@ -93,7 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     $ratings = $_POST['ratings'];
 
 
-    $sql = "INSERT INTO `cars` (`renter_id`, `company_id`, `car_name`, `province`, `city`, `address`, `image1`, `image2`, `image3`, `image4`, `ratings`) VALUES ('$renter_id', '$company_id', '$car_name', '$province', '$city', '$address', '$image1', '$image2', '$image3', '$image4', '$ratings')";
+    $sql = "INSERT INTO `cars` (`renter_id`, `company_id`, `car_name`,`kms_driven`,`engine`, `fuel_type`, `color`, `mileage`, `province`, `city`, `address`, `latitude`, `longitude`,`famous_place_nearby`, `image1`, `image2`, `image3`, `image4`, `ratings`)
+     VALUES ('$renter_id', '$company_id', '$car_name','$kms_driven','$engine','$fuel_type','$color','$mileage' '$province', '$city', '$address','$latitude','$longitude','$famous_place_nearby', '$image1', '$image2', '$image3', '$image4', '$ratings')";
 
     $query = mysqli_query($conn, $sql);
     if ($query)
