@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     $ratings = $_POST['ratings'];
 
 
-    $sql = "INSERT INTO `cars` (`renter_id`, `company_id`, `car_name`,`kms_driven`,`engine`, `fuel_type`, `color`, `mileage`, `province`, `city`, `address`, `latitude`, `longitude`,`famous_place_nearby`, `image1`, `image2`, `image3`, `image4`, `ratings`) VALUES ('$renter_id', '$company_id', '$car_name','$kms_driven','$engine','$fuel_type','$color','$mileage' '$province', '$city', '$address','$latitude','$longitude','$famous_place_nearby', '$image1', '$image2', '$image3', '$image4', '$ratings')";
+    $sql = "INSERT INTO `cars` (`renter_id`, `company_id`, `car_name`,`kms_driven`,`engine`, `fuel_type`, `color`, `mileage`, `province`, `city`, `address`, `latitude`, `longitude`,`famous_place_nearby`, `image1`, `image2`, `image3`, `image4`, `ratings`) VALUES ('$renter_id', '$company_id', '$car_name','$kms_driven','$engine','$fuel_type','$color','$mileage','$province', '$city', '$address','$latitude','$longitude','$famous_place_nearby', '$image1', '$image2', '$image3', '$image4', '$ratings')";
 
     $query = mysqli_query($conn, $sql);
     if ($query)
