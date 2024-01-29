@@ -21,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     if (!$decodedToken) {
         sendJson(401, 'Unauthorized');
     }
-
     if (
         !isset($_POST['car_id']) ||
         !isset($_POST['customer_id']) ||
@@ -34,8 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         empty(trim($_POST['end_date'])) ||
         empty(trim($_POST['start_date'])) ||
         empty(trim($_POST['renter_id'])) ||
-        empty(trim($_POST['company_id'])) ||
-        empty(trim($_POST['car_name'])) ||
+        empty(trim($_POST['car_id'])) ||
         empty(trim($_POST['province'])) ||
         empty(trim($_POST['city'])) ||
         empty(trim($_POST['address']))
