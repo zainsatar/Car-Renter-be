@@ -22,27 +22,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         sendJson(401, 'Unauthorized');
     }
 
-    if (
-        !isset($_POST['renter_id']) ||
-        !isset($_POST['company_id']) ||
-        !isset($_POST['car_name']) ||
-        !isset($_POST['province']) ||
-        !isset($_POST['city']) ||
-        !isset($_POST['address']) ||
-        empty(trim($_POST['renter_id'])) ||
-        empty(trim($_POST['company_id'])) ||
-        empty(trim($_POST['car_name'])) ||
-        empty(trim($_POST['province'])) ||
-        empty(trim($_POST['city'])) ||
-        empty(trim($_POST['address']))
-    ):
-        sendJson(
-            404,
-            'Please fill all the required fields'
-        );
-    endif;
+    if (!isset($_POST['car_id'])) {
+        sendJson(404, 'Car ID is required for update.');
+    }
 
+    // Fetch the existing car record
+    $car_id = $_POST['car_id'];
+    $existingCarQuery = "SELECT * FROM `cars` WHERE `car_id`='$car_id'";
+    $existingCarResult = mysqli_query($conn, $existingCarQuery);
+
+    if (!$existingCarResult) {
+        sendJson(500, 'Database query error.');
+    }
+
+    $existingCar = mysqli_fetch_assoc($existingCarResult);
+
+    if (!$existingCar) {
+        sendJson(404, 'Car not found for the provided ID.');
+    }
+
+    // Remove old uploaded files
     $uploadDir = __DIR__ . '/../uploads/';
+    if (!empty($existingCar['image1'])) {
+        unlink($uploadDir . $existingCar['image1']);
+    }
+    if (!empty($existingCar['image2'])) {
+        unlink($uploadDir . $existingCar['image2']);
+    }
+    if (!empty($existingCar['image3'])) {
+        unlink($uploadDir . $existingCar['image3']);
+    }
+    if (!empty($existingCar['image4'])) {
+        unlink($uploadDir . $existingCar['image4']);
+    }
+
     if (isset($_FILES['image1'])) {
         $file = $_FILES['image1'];
         $fileBasePath = $_POST['renter_id'] . time() . $file['name'];
@@ -84,18 +97,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         }
     }
 
-    $_POST['ratings'] = -1;
+    unset($_POST['car_id']);
 
-    $columns = implode('`, `', array_keys($_POST));
-    $values = implode("', '", array_map(function ($value) use ($conn) {
-        return is_string($value) ? mysqli_real_escape_string($conn, $value) : $value;
-    }, $_POST));
+    $setClause = "";
+    foreach ($_POST as $column => $value) {
+        // Escape and quote the value if it's a string
+        $escapedValue = is_string($value) ? "'" . mysqli_real_escape_string($conn, $value) . "'" : $value;
 
-    $sql = "INSERT INTO `cars` (`$columns`) VALUES ('$values')";
+        // Concatenate each column-value pair
+        $setClause .= "`$column`=$escapedValue, ";
+    }
+
+    // Remove the trailing comma and space
+    $setClause = rtrim($setClause, ', ');
+
+
+    $sql = "UPDATE `cars` SET $setClause WHERE `car_id`=$car_id";
 
     $query = mysqli_query($conn, $sql);
     if ($query)
-        sendJson(200, 'Car added successfully.', ['data' => $_POST]);
+        sendJson(200, 'Car updated successfully.');
     sendJson(500, 'Something going wrong.');
 endif;
 
