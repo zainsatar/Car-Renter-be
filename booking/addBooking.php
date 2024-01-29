@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
 
     $query = mysqli_query($conn, $sql);
     if ($query)
-        sendJson(200, 'Car added successfully.', ['data' => $_POST]);
+        sendJson(200, 'Booking added successfully.', ['data' => $_POST]);
     sendJson(500, 'Something going wrong.');
 endif;
 
