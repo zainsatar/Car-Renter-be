@@ -6,7 +6,7 @@ header('Content-Type: application/json; charset=UTF-8');
 
 require_once __DIR__ . '/../database/database.php';
 require_once __DIR__ . '/../helper/sendJson.php';
-require_once __DIR__ . '/../helper/authHelper.php'; 
+require_once __DIR__ . '/../helper/authHelper.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -48,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!$deleteQuery) {
         sendJson(500, 'Failed to delete user');
     }
+    sendJson(200, 'Your account has been deleted.');
 
 } else {
     sendJson(405, 'Invalid Request Method. HTTP method should be POST');
