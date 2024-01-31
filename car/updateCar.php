@@ -42,56 +42,65 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     }
 
     // Remove old uploaded files
-    $uploadDir = __DIR__ . '/../uploads/';
-    if (!empty($existingCar['image1'])) {
-        unlink($uploadDir . $existingCar['image1']);
+    $basePath = dirname(__DIR__).'/';
+    
+    if (isset($_FILES['image1']) && !empty($existingCar['image1'])) {
+        unlink($basePath . $existingCar['image1']);
     }
-    if (!empty($existingCar['image2'])) {
-        unlink($uploadDir . $existingCar['image2']);
+    if (isset($_FILES['image2']) && !empty($existingCar['image2'])) {
+        unlink($basePath . $existingCar['image2']);
     }
-    if (!empty($existingCar['image3'])) {
-        unlink($uploadDir . $existingCar['image3']);
+    if (isset($_FILES['image3']) && !empty($existingCar['image3'])) {
+        unlink($basePath . $existingCar['image3']);
     }
-    if (!empty($existingCar['image4'])) {
-        unlink($uploadDir . $existingCar['image4']);
+    if (isset($_FILES['image4']) && !empty($existingCar['image4'])) {
+        unlink($basePath . $existingCar['image4']);
     }
 
+    $uploadDir = 'uploads/cars/renter_id_'.$_POST['renter_id']. '/';
+    $path=$basePath.$uploadDir;
+    
+    // Create the folder if it doesn't exist
+    if (!file_exists($path)) {
+        mkdir($path, 0777, true);
+    }
+    
     if (isset($_FILES['image1'])) {
         $file = $_FILES['image1'];
-        $fileBasePath = $_POST['renter_id'] . time() . $file['name'];
-        $uploadfile = $uploadDir . basename($fileBasePath);
+        $fileName = time() . $file['name'];
+        $uploadfile = $path . basename($fileName);
         if (move_uploaded_file($file['tmp_name'], $uploadfile)) {
-            $_POST['image1'] = $fileBasePath;
+            $_POST['image1'] =$uploadDir. $fileName;
         } else {
             sendJson(500, 'Failed to upload file.');
         }
     }
     if (isset($_FILES['image2'])) {
         $file = $_FILES['image2'];
-        $fileBasePath = $_POST['renter_id'] . time() . $file['name'];
-        $uploadfile = $uploadDir . basename($fileBasePath);
+        $fileName = time() . $file['name'];
+        $uploadfile = $path . basename($fileName);
         if (move_uploaded_file($file['tmp_name'], $uploadfile)) {
-            $_POST['image2'] = $fileBasePath;
+            $_POST['image2'] =$uploadDir. $fileName;
         } else {
             sendJson(500, 'Failed to upload file.');
         }
     }
     if (isset($_FILES['image3'])) {
         $file = $_FILES['image3'];
-        $fileBasePath = $_POST['renter_id'] . time() . $file['name'];
-        $uploadfile = $uploadDir . basename($fileBasePath);
+        $fileName = time() . $file['name'];
+        $uploadfile = $path . basename($fileName);
         if (move_uploaded_file($file['tmp_name'], $uploadfile)) {
-            $_POST['image3'] = $fileBasePath;
+            $_POST['image3'] =$uploadDir. $fileName;
         } else {
             sendJson(500, 'Failed to upload file.');
         }
     }
     if (isset($_FILES['image4'])) {
         $file = $_FILES['image4'];
-        $fileBasePath = $_POST['renter_id'] . time() . $file['name'];
-        $uploadfile = $uploadDir . basename($fileBasePath);
+        $fileName = time() . $file['name'];
+        $uploadfile = $path . basename($fileName);
         if (move_uploaded_file($file['tmp_name'], $uploadfile)) {
-            $_POST['image4'] = $fileBasePath;
+            $_POST['image4'] =$uploadDir. $fileName;
         } else {
             sendJson(500, 'Failed to upload file.');
         }
