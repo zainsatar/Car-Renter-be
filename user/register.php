@@ -61,24 +61,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         $idBackImage = $_FILES['idBackImage'];
         $idFrontImage = $_FILES['idFrontImage'];
 
-        $profileImageBasePath = $_POST['email'] . time() . $profileImage['name'];
-        $idBackImageBasePath = $_POST['email'] . time() . $idBackImage['name'];
-        $idFrontImageBasePath = $_POST['email'] . time() . $idFrontImage['name'];
+        $profileImageName = time() . $profileImage['name'];
+        $idBackImageName = time() . $idBackImage['name'];
+        $idFrontImageName = time() . $idFrontImage['name'];
 
         // You can customize the file handling logic as per your requirements
-        $uploadDir = __DIR__ . '/../uploads/';
-        $uploadprofileImage = $uploadDir . basename($profileImageBasePath);
-        $uploadidBackImage = $uploadDir . basename($idBackImageBasePath);
-        $uploadidFrontImage = $uploadDir . basename($idFrontImageBasePath);
+        $basePath = dirname(__DIR__);
+        $uploadDir = 'uploads/'.$_POST['role'].'/'. $_POST['email'] . '/';
+        $path=$basePath.'/'.$uploadDir;
+
+        // Create the folder if it doesn't exist
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+        $uploadprofileImage = $path . basename($profileImageName);
+        $uploadidBackImage = $path . basename($idBackImageName);
+        $uploadidFrontImage = $path . basename($idFrontImageName);
 
         if (
             move_uploaded_file($profileImage['tmp_name'], $uploadprofileImage) &&
             move_uploaded_file($idBackImage['tmp_name'], $uploadidBackImage) &&
             move_uploaded_file($idFrontImage['tmp_name'], $uploadidFrontImage)
         ) {
-            $_POST['profileImage'] = $profileImageBasePath;
-            $_POST['idBackImage'] = $idBackImageBasePath;
-            $_POST['idFrontImage'] = $idFrontImageBasePath;
+            $_POST['profileImage'] = $uploadDir.$profileImageName;
+            $_POST['idBackImage'] = $uploadDir.$idBackImageName;
+            $_POST['idFrontImage'] = $uploadDir.$idFrontImageName;
         } else {
             sendJson(500, 'Failed to upload file.');
         }
