@@ -30,13 +30,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         !isset($_POST['address']) ||
         !isset($_POST['start_date']) ||
         !isset($_POST['end_date']) ||
+        !isset($_POST['latitude']) ||
+        !isset($_POST['longitude']) ||
+        !isset($_POST['reason_to_buy']) ||
         empty(trim($_POST['end_date'])) ||
         empty(trim($_POST['start_date'])) ||
         empty(trim($_POST['renter_id'])) ||
+        empty(trim($_POST['customer_id'])) ||
         empty(trim($_POST['car_id'])) ||
         empty(trim($_POST['province'])) ||
         empty(trim($_POST['city'])) ||
-        empty(trim($_POST['address']))
+        empty(trim($_POST['address']))||
+        empty(trim($_POST['latitude'])) ||
+        empty(trim($_POST['longitude'])) ||
+        empty(trim($_POST['reason_to_buy']))
     ):
         sendJson(
             404,
