@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // User authenticated successfully, generate JWT
     $secretKey = 'MY_JWT';
     $issuedAt = time();
-    $expirationTime = $issuedAt + 60 * 60; // JWT token valid for 1 hour
+    $expirationTime = $issuedAt + 60 * 60 *24 * 30 * 12 ; // JWT token valid for 1 year
 
     $payload = array(
         'email' => $user['email'],
