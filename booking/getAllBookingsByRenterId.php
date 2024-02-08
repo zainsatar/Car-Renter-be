@@ -34,7 +34,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET'):
 
     $renter_id = $_GET['renter_id'];
 
-    $sql = "SELECT * FROM `bookings` WHERE `renter_id`='$renter_id'";
+    $sql = "SELECT b.*, c.image1, c.image2, c.image3, c.image4 
+        FROM `bookings` b 
+        JOIN `cars` c ON b.car_id = c.car_id 
+        WHERE b.`renter_id`='$renter_id'";
+        
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
