@@ -29,12 +29,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         !isset($_POST['province']) ||
         !isset($_POST['city']) ||
         !isset($_POST['address']) ||
+        !isset($_POST['price']) ||
+        !isset($_POST['phone_number']) ||
         empty(trim($_POST['renter_id'])) ||
         empty(trim($_POST['company_id'])) ||
         empty(trim($_POST['car_name'])) ||
         empty(trim($_POST['province'])) ||
         empty(trim($_POST['city'])) ||
-        empty(trim($_POST['address']))
+        empty(trim($_POST['address']))||
+        empty(trim($_POST['price'])) ||
+        empty(trim($_POST['phone_number']))
     ):
         sendJson(
             404,
