@@ -61,7 +61,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
 
     $query = mysqli_query($conn, $sql);
     if ($query)
-        sendJson(200, 'Booking added successfully.', ['data' => $_POST]);
+    {
+        $car_id=$_POST['car_id'];
+        // Update the isBooked column to true
+        $sql = "UPDATE `cars` SET `isBooked` = 1 WHERE `car_id` = $car_id";
+        $updateQuery = mysqli_query($conn, $sql);
+        if ($updateQuery) {
+            sendJson(200, 'Booking added successfully.', ['data' => $_POST]);
+        }else{
+            // Handle the case where the update query fails
+            sendJson(500, 'Error updating car status.');
+        }
+    }
     sendJson(500, 'Something going wrong.');
 endif;
 

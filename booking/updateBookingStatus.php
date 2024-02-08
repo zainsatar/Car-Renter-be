@@ -36,15 +36,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         sendJson(500, 'Database query error.');
     }
 
-    if (!mysqli_fetch_assoc($existingBooking)) {
+    $bookingRecord = mysqli_fetch_assoc($existingBooking);
+
+    if (!$bookingRecord) {
         sendJson(404, 'Booking not found for the provided ID.');
     }
+
+    $car_id = $bookingRecord['car_id'];
 
     $sql = "UPDATE `bookings` SET `status`= '$booking_status' WHERE `booking_id`=$booking_id";
 
     $query = mysqli_query($conn, $sql);
     if ($query)
+    {
+        // Update the isBooked column in the cars table
+        if ($booking_status == 'canceled' || $booking_status == 'completed') {
+            // Set isBooked to false if booking status is canceled or completed
+            $isBooked = 0;
+        } else {
+            // Set isBooked to true for any other status
+            $isBooked = 1;
+        } 
+        $updateCarSql = "UPDATE `cars` SET `isBooked` = $isBooked WHERE `car_id` = $car_id";
+        $updateCarQuery = mysqli_query($conn, $updateCarSql);
+        if (!$updateCarQuery) {
+            sendJson(500, 'Error updating car isBooked status.');
+        }   
         sendJson(200, 'Booking updated successfully.');
+    }
     sendJson(500, 'Something going wrong.');
 endif;
 
