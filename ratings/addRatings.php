@@ -35,6 +35,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         );
     endif;
 
+    if($_POST['rating'] <= 0 ||$_POST['rating'] > 5){
+        sendJson(
+            500,
+            'Rate between 1 to 5'
+        );
+    }
+
+    $car_id=$_POST['car_id'];
+    $customer_id=$_POST['customer_id'];
+    $rating=$_POST['rating'];
 
     $columns = implode('`, `', array_keys($_POST));
     $values = implode("', '", array_map(function ($value) use ($conn) {
@@ -50,13 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         $result = mysqli_query($conn, $sql);
         $row = mysqli_fetch_assoc($result);
         $average_rating = $row['average_rating'];
-
-        if ($average_rating == NULL || $average_rating == -1) {
+        if ($average_rating == NULL || $average_rating == null || $average_rating == -1) {
             // If no previous rating or default rating present, set the new rating
-            $update_sql = "UPDATE cars SET ratings = '$rating' WHERE car_id = '$car_id'";
+            $update_sql = "UPDATE `cars` SET `ratings` = $rating WHERE `car_id` = $car_id";
         } else {
             // If previous ratings exist, update with the average
-            $update_sql = "UPDATE cars SET ratings = '$average_rating' WHERE car_id = '$car_id'";
+            $update_sql = "UPDATE `cars` SET `ratings` = $average_rating WHERE `car_id` = $car_id";
         }
 
         mysqli_query($conn, $update_sql);
