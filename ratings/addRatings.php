@@ -24,28 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     if (
         !isset($_POST['car_id']) ||
         !isset($_POST['customer_id']) ||
-        !isset($_POST['renter_id']) ||
-        !isset($_POST['province']) ||
-        !isset($_POST['customer_phone_number']) ||
-        !isset($_POST['city']) ||
-        !isset($_POST['address']) ||
-        !isset($_POST['start_date']) ||
-        !isset($_POST['end_date']) ||
-        !isset($_POST['latitude']) ||
-        !isset($_POST['longitude']) ||
-        !isset($_POST['reason_to_buy']) ||
-        empty(trim($_POST['end_date'])) ||
-        empty(trim($_POST['start_date'])) ||
-        empty(trim($_POST['renter_id'])) ||
+        !isset($_POST['rating']) ||
         empty(trim($_POST['customer_id'])) ||
         empty(trim($_POST['car_id'])) ||
-        empty(trim($_POST['customer_phone_number'])) ||
-        empty(trim($_POST['province'])) ||
-        empty(trim($_POST['city'])) ||
-        empty(trim($_POST['address']))||
-        empty(trim($_POST['latitude'])) ||
-        empty(trim($_POST['longitude'])) ||
-        empty(trim($_POST['reason_to_buy']))
+        empty(trim($_POST['rating']))
     ):
         sendJson(
             404,
@@ -59,23 +41,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         return is_string($value) ? mysqli_real_escape_string($conn, $value) : $value;
     }, $_POST));
 
-    $sql = "INSERT INTO `bookings` (`$columns`) VALUES ('$values')";
+    $sql = "INSERT INTO `ratings` (`$columns`) VALUES ('$values')";
 
     $query = mysqli_query($conn, $sql);
-    if ($query)
-    {
-        $car_id=$_POST['car_id'];
-        // Update the isBooked column to true
-        $sql = "UPDATE `cars` SET `isBooked` = 1 WHERE `car_id` = $car_id";
-        $updateQuery = mysqli_query($conn, $sql);
-        if ($updateQuery) {
-            sendJson(200, 'Booking added successfully.', ['data' => $_POST]);
-        }else{
-            // Handle the case where the update query fails
-            sendJson(500, 'Error updating car status.');
+    if ($query) {
+        // Update ratings column in cars table
+        $sql = "SELECT AVG(rating) AS average_rating FROM ratings WHERE car_id = '$car_id'";
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_assoc($result);
+        $average_rating = $row['average_rating'];
+
+        if ($average_rating == NULL || $average_rating == -1) {
+            // If no previous rating or default rating present, set the new rating
+            $update_sql = "UPDATE cars SET ratings = '$rating' WHERE car_id = '$car_id'";
+        } else {
+            // If previous ratings exist, update with the average
+            $update_sql = "UPDATE cars SET ratings = '$average_rating' WHERE car_id = '$car_id'";
         }
+
+        mysqli_query($conn, $update_sql);
+
+        // Success response
+        sendJson(
+            200,
+            'Car rated successfully'
+        );
+    } else {
+        // Error response
+        sendJson(
+            500,
+            'Error adding rating'
+        );
     }
-    sendJson(500, 'Something going wrong.');
 endif;
 
 sendJson(405, 'Invalid Request Method. HTTP method should be POST');
